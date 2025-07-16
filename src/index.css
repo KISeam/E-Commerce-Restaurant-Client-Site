@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* Global styles */
+.carousel-container {
+  max-width: 100%; /* Ensure the carousel takes full width */
+  margin: 0 auto; /* Center the carousel container */
+}
+
+/* Style for each slide */
+.carousel-slide {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 90vh !important; /* Adjust height as needed */
+  background-color: #f9f9f9; /* Optional background color */
+}
+
+/* Style for images inside the slides */
+.carousel-slide img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important; /* Ensures image fills the space without distortion */
+  display: block !important;
+}
+
+/* Optional: Style the carousel wrapper */
+.Carousel {
+  background-color: #f9f9f9; /* Optional background color */
+  border-radius: 8px; /* Optional border radius */
+}
+
+/* Style the indicators (dots) */
+.Carousel__IndicatorDot {
+  background-color: #ccc; /* Indicator dot color */
+  opacity: 1; /* Make dots visible */
+}
+
+.Carousel__IndicatorDot--active {
+  background-color: #007bff; /* Active indicator dot color */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1000px) {
+  .carousel-slide {
+    height: 70vh !important; /* Reduce height for smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-slide {
+    height: 60vh !important; /* Reduce height for smaller screens */
+  }
+}
+
+@media (max-width: 500px) {
+  .carousel-slide {
+    height: 50vh !important; /* Further reduce height for very small screens */
+  }
+}
