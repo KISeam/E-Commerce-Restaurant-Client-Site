@@ -7,8 +7,10 @@ import { AuthContext } from "../../providers/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { sendEmailVerification, updateProfile } from "firebase/auth";
 import Swal from "sweetalert2";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const Signup = () => {
+  const axiosPublic = useAxiosPublic();
   const { createUser, googleSignIn } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -61,24 +63,41 @@ const Signup = () => {
         }).then(() => {
           sendEmailVerification(user)
             .then(() => {
-              Swal.fire({
-                icon: "success",
-                title: "Verification Email Sent!",
-                text: "📨 A verification email has been sent to your inbox.",
-                timer: 3000,
-                showConfirmButton: false,
-              });
-
-              setTimeout(() => {
-                setLoading(false);
-                navigate("/login");
-              }, 2000);
+              // 🔻 Save user to the database
+              axiosPublic
+                .post("/users", {
+                  name: formData.name,
+                  email: formData.email,
+                  image: formData.image || user.photoURL || "",
+                  role: "user", // Default role
+                })
+                .then((res) => {
+                  if (res.data.insertedId) {
+                    Swal.fire({
+                      icon: "success",
+                      title: `Welcome ${formData.name}!`,
+                      text: "Please check your email for verification.",
+                      timer: 3000,
+                      showConfirmButton: false,
+                    });
+                    setLoading(false);
+                    navigate("/login");
+                  }
+                })
+                .catch((error) => {
+                  Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: error.message || "Failed to create user.",
+                  });
+                  setLoading(false);
+                });
             })
-            .catch(() => {
+            .catch((error) => {
               Swal.fire({
                 icon: "error",
-                title: "Oops...",
-                text: "Failed to send verification email.",
+                title: "Email Verification Failed",
+                text: error.message || "Please try again.",
               });
               setLoading(false);
             });
@@ -92,13 +111,58 @@ const Signup = () => {
     googleSignIn()
       .then((result) => {
         const user = result.user;
-        Swal.fire({
-          icon: "success",
-          title: `Welcome ${user.displayName || "User"}!`,
-          timer: 2000,
-          showConfirmButton: false,
+
+        console.log("Google signup user payload:", {
+          name: user.displayName,
+          email: user.email,
+          image: user.photoURL,
+          role: "user",
         });
-        navigate("/"); // or your desired page
+
+        // 🔻 Save user to the database
+        axiosPublic
+          .post("/users", {
+            name: user.displayName,
+            email: user.email,
+            image: user.photoURL,
+            role: "user",
+          })
+          .then((res) => {
+            if (res.data.insertedId) {
+              Swal.fire({
+                icon: "success",
+                title: `Welcome ${user.displayName || "User"}!`,
+                text: "You have successfully signed up with Google.",
+                timer: 2000,
+                showConfirmButton: false,
+              });
+              navigate("/");
+            } else if (res.data.message === "user already exists") {
+              Swal.fire({
+                icon: "info",
+                title: "Account Already Exists",
+                text: "You are already registered. Redirecting...",
+                timer: 2000,
+                showConfirmButton: false,
+              });
+              navigate("/");
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Something went wrong",
+                text: "Unable to sign up. Please try again.",
+              });
+            }
+          })
+
+          .catch((error) => {
+            console.error("User Save Error:", error);
+            Swal.fire({
+              icon: "error",
+              title: "Database Save Failed",
+              text: error.message || "Please try again.",
+            });
+          });
       })
       .catch((error) => {
         Swal.fire({
@@ -183,9 +247,7 @@ const Signup = () => {
               <span
                 onClick={() => setShowPassword(!showPassword)}
                 className={`absolute right-4 text-xl text-gray-600 cursor-pointer ${
-                  errors.password
-                    ? "-translate-y-1/2 top-[45%]"
-                    : "top-[55%]"
+                  errors.password ? "-translate-y-1/2 top-[45%]" : "top-[55%]"
                 }`}
               >
                 {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}

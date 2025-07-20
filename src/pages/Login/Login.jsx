@@ -6,12 +6,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../providers/AuthProvider";
 import Swal from "sweetalert2";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const generateCaptcha = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
 const Login = () => {
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
   const location = useLocation();
   const { login, googleSignIn } = useContext(AuthContext);
@@ -60,18 +62,47 @@ const Login = () => {
 
     if (Object.keys(newErrors).length === 0) {
       login(formData.email, formData.password)
-        .then((result) => {
+        .then(async (result) => {
           const loggedUser = result.user;
 
           if (loggedUser.emailVerified) {
-            Swal.fire({
-              icon: "success",
-              title: "Login successful 🎉",
-              text: "Welcome back!",
-              timer: 3000,
-              showConfirmButton: false,
-            });
-            navigate(from, { replace: true });
+            try {
+              // ১. Check MongoDB if user already exists
+              const res = await axiosPublic.get(
+                `/users?email=${loggedUser.email}`
+              );
+              const existingUser = res.data;
+
+              if (!existingUser) {
+                // ২. যদি না থাকে, তাহলে user DB-তে insert করো
+                const saveUser = {
+                  name: loggedUser.displayName || "User",
+                  email: loggedUser.email,
+                  image: loggedUser.photoURL || "",
+                  password: loggedUser.password || "",
+                  role: "user",
+                };
+
+                await axiosPublic.post("/users", saveUser);
+              }
+
+              // ৩. Navigate success
+              Swal.fire({
+                icon: "success",
+                title: "Login successful 🎉",
+                text: "Welcome back!",
+                timer: 3000,
+                showConfirmButton: false,
+              });
+              navigate(from, { replace: true });
+            } catch (dbError) {
+              console.error("MongoDB Error:", dbError);
+              Swal.fire({
+                icon: "warning",
+                title: "Login Warning",
+                text: "Logged in, but failed to save user in DB.",
+              });
+            }
           } else {
             Swal.fire({
               icon: "warning",
@@ -91,28 +122,72 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    googleSignIn()
-      .then((result) => {
-        const user = result.user;
-        Swal.fire({
-          icon: "success",
-          title: `Welcome, ${user.displayName || "User"}!`,
-          timer: 3000,
-          showConfirmButton: false,
-        });
-        // Optional: navigate("/dashboard");
-        navigate('/')
-      })
-      .catch((error) => {
-        console.error(error);
-        Swal.fire({
-          icon: "error",
-          title: "Google Sign-In Failed",
-          text: "Please try again.",
-        });
-      });
-  };
+
+   const handleGoogleSignup = () => {
+      googleSignIn()
+        .then((result) => {
+          const user = result.user;
+  
+          console.log("Google signup user payload:", {
+            name: user.displayName,
+            email: user.email,
+            image: user.photoURL,
+            role: "user",
+          });
+  
+          // 🔻 Save user to the database
+          axiosPublic
+            .post("/users", {
+              name: user.displayName,
+              email: user.email,
+              image: user.photoURL,
+              role: "user",
+            })
+            .then((res) => {
+              if (res.data.insertedId) {
+                Swal.fire({
+                  icon: "success",
+                  title: `Welcome ${user.displayName || "User"}!`,
+                  text: "You have successfully signed up with Google.",
+                  timer: 2000,
+                  showConfirmButton: false,
+                });
+                navigate("/");
+              } else if (res.data.message === "user already exists") {
+                Swal.fire({
+                  icon: "info",
+                  title: "Account Already Exists",
+                  text: "You are already registered. Redirecting...",
+                  timer: 2000,
+                  showConfirmButton: false,
+                });
+                navigate("/");
+              } else {
+                Swal.fire({
+                  icon: "error",
+                  title: "Something went wrong",
+                  text: "Unable to sign up. Please try again.",
+                });
+              }
+            })
+  
+            .catch((error) => {
+              console.error("User Save Error:", error);
+              Swal.fire({
+                icon: "error",
+                title: "Database Save Failed",
+                text: error.message || "Please try again.",
+              });
+            });
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Google Sign-in Failed",
+            text: error.message || "Please try again.",
+          });
+        })
+    };
 
   return (
     <div
@@ -177,9 +252,7 @@ const Login = () => {
               <span
                 onClick={() => setShowPassword(!showPassword)}
                 className={`absolute right-4 text-xl text-gray-600 cursor-pointer ${
-                  errors.password
-                    ? "-translate-y-1/2 top-[45%]"
-                    : "top-[55%]"
+                  errors.password ? "-translate-y-1/2 top-[45%]" : "top-[55%]"
                 }`}
               >
                 {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
@@ -247,7 +320,7 @@ const Login = () => {
           <div className="mt-6">
             <button
               type="button"
-              onClick={handleGoogleLogin}
+              onClick={handleGoogleSignup}
               className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-md bg-white transition cursor-pointer hover:shadow-md"
             >
               <img

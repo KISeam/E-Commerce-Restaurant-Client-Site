@@ -2,9 +2,12 @@ import React, { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../../../providers/AuthProvider";
 import userImg from "../../../assets/others/profile.png";
+import { FaShoppingCart } from "react-icons/fa";
+import useCart from "../../../hooks/useCart";
 
 const Navbar = () => {
-  const { user , logout } = useContext(AuthContext);
+  const { user, dbUser, logout } = useContext(AuthContext);
+  const [cart] = useCart();
 
   const handleLogout = () => {
     logout()
@@ -13,32 +16,11 @@ const Navbar = () => {
   };
 
   const navItems = [
-    {
-      name: "Home",
-      path: "/",
-    },
-    {
-      name: "Contact Us",
-      path: "/contact",
-    },
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-    },
-    {
-      name: "Our Menu",
-      path: "/menu",
-    },
-    {
-      name: "Our Shop",
-      path: "/order",
-    },
-    user
-      ? {}
-      : {
-          name: "Login",
-          path: "/login",
-        },
+    { name: "Home", path: "/" },
+    { name: "Contact Us", path: "/contact" },
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Our Menu", path: "/menu" },
+    { name: "Our Shop", path: "/order" },
   ];
 
   return (
@@ -81,6 +63,18 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                   ))}
+                  {!user && (
+                    <li>
+                      <NavLink
+                        to="/login"
+                        className={({ isActive }) =>
+                          isActive ? "text-orange-500" : "text-white"
+                        }
+                      >
+                        Login
+                      </NavLink>
+                    </li>
+                  )}
                 </ul>
               </div>
 
@@ -110,57 +104,87 @@ const Navbar = () => {
                     </NavLink>
                   </li>
                 ))}
+                {!user && (
+                  <li>
+                    <NavLink
+                      to="/login"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "text-orange-500 hover:text-orange-400"
+                          : "text-white hover:text-orange-500"
+                      }
+                    >
+                      Login
+                    </NavLink>
+                  </li>
+                )}
+                <li className="relative">
+                  <NavLink
+                    to="/dashboard/cart"
+                    className={({ isActive }) =>
+                      isActive
+                        ? "text-orange-500"
+                        : "text-white hover:text-orange-500"
+                    }
+                  >
+                    <FaShoppingCart className="text-2xl" />
+                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded-full">
+                      {cart.length || 0}
+                    </span>
+                  </NavLink>
+                </li>
               </ul>
             </div>
 
-            {/* Right - Profile Dropdown */}
-            <div className="dropdown dropdown-end">
-              <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                <div className="w-10 rounded-full">
-                  <img
-                    src={user?.photoURL || userImg}
-                    alt={`${user?.displayName} profile picture`}
-                    className="object-cover"
-                  />
-                </div>
-              </label>
-              <ul
-                tabIndex={0}
-                className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-black rounded-box w-52"
-              >
-                <li>
-                  <NavLink
-                    to="/profile"
-                    className={({ isActive }) =>
-                      isActive ? "text-orange-500" : "text-white"
-                    }
-                  >
-                    Profile
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/settings"
-                    className={({ isActive }) =>
-                      isActive ? "text-orange-500" : "text-white"
-                    }
-                  >
-                    Settings
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/login"
-                    className={({ isActive }) =>
-                      isActive ? "text-orange-500" : "text-white"
-                    }
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </NavLink>
-                </li>
-              </ul>
-            </div>
+            {/* Right - Profile Dropdown if logged in */}
+            {user && (
+              <div className="dropdown dropdown-end">
+                <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                  <div className="w-10 rounded-full">
+                    <img
+                      src={user?.photoURL || dbUser?.image || userImg}
+                      alt={`${
+                        user?.displayName || dbUser?.name || "User"
+                      } profile picture`}
+                      className="object-cover"
+                    />
+                  </div>
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-black rounded-box w-52"
+                >
+                  <li>
+                    <NavLink
+                      to="/profile"
+                      className={({ isActive }) =>
+                        isActive ? "text-orange-500" : "text-white"
+                      }
+                    >
+                      Profile
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/settings"
+                      className={({ isActive }) =>
+                        isActive ? "text-orange-500" : "text-white"
+                      }
+                    >
+                      Settings
+                    </NavLink>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="text-white hover:text-orange-500 text-left w-full"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>
