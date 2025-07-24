@@ -22,6 +22,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   let from = location.state?.from?.pathname || "/";
 
@@ -61,58 +62,50 @@ const Login = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
       login(formData.email, formData.password)
         .then(async (result) => {
           const loggedUser = result.user;
 
-          if (loggedUser.emailVerified) {
-            try {
-              // ১. Check MongoDB if user already exists
-              const res = await axiosPublic.get(
-                `/users?email=${loggedUser.email}`
-              );
-              const existingUser = res.data;
-
-              if (!existingUser) {
-                // ২. যদি না থাকে, তাহলে user DB-তে insert করো
-                const saveUser = {
-                  name: loggedUser.displayName || "User",
-                  email: loggedUser.email,
-                  image: loggedUser.photoURL || "",
-                  password: loggedUser.password || "",
-                  role: "user",
-                };
-
-                await axiosPublic.post("/users", saveUser);
-              }
-
-              // ৩. Navigate success
-              Swal.fire({
-                icon: "success",
-                title: "Login successful 🎉",
-                text: "Welcome back!",
-                timer: 3000,
-                showConfirmButton: false,
-              });
-              navigate(from, { replace: true });
-            } catch (dbError) {
-              console.error("MongoDB Error:", dbError);
-              Swal.fire({
-                icon: "warning",
-                title: "Login Warning",
-                text: "Logged in, but failed to save user in DB.",
-              });
-            }
-          } else {
+          if (!loggedUser.emailVerified) {
             Swal.fire({
               icon: "warning",
               title: "Email Not Verified",
               text: "Please verify your email before logging in.",
             });
+            return;
+          }
+
+          try {
+            // Check if user exists in DB
+            const res = await axiosPublic.get(`/users/${loggedUser.email}`);
+            const existingUser = res.data;
+
+            if (!existingUser) {
+              throw new Error("User not found in database.");
+            }
+
+            // Show login success
+            Swal.fire({
+              icon: "success",
+              title: "Login successful 🎉",
+              text: "Welcome back!",
+              timer: 3000,
+              showConfirmButton: false,
+            });
+            setLoading(false);
+            navigate(from, { replace: true });
+          } catch (error) {
+            setLoading(false);
+            Swal.fire({
+              icon: "error",
+              title: "Access Denied",
+              text: "You are not registered in the system.",
+            });
           }
         })
         .catch((error) => {
-          console.error(error);
+          setLoading(false);
           Swal.fire({
             icon: "error",
             title: "Login Failed",
@@ -122,72 +115,66 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await googleSignIn();
+      const user = result.user;
 
-   const handleGoogleSignup = () => {
-      googleSignIn()
-        .then((result) => {
-          const user = result.user;
-  
-          console.log("Google signup user payload:", {
-            name: user.displayName,
-            email: user.email,
-            image: user.photoURL,
-            role: "user",
-          });
-  
-          // 🔻 Save user to the database
-          axiosPublic
-            .post("/users", {
-              name: user.displayName,
-              email: user.email,
-              image: user.photoURL,
-              role: "user",
-            })
-            .then((res) => {
-              if (res.data.insertedId) {
-                Swal.fire({
-                  icon: "success",
-                  title: `Welcome ${user.displayName || "User"}!`,
-                  text: "You have successfully signed up with Google.",
-                  timer: 2000,
-                  showConfirmButton: false,
-                });
-                navigate("/");
-              } else if (res.data.message === "user already exists") {
-                Swal.fire({
-                  icon: "info",
-                  title: "Account Already Exists",
-                  text: "You are already registered. Redirecting...",
-                  timer: 2000,
-                  showConfirmButton: false,
-                });
-                navigate("/");
-              } else {
-                Swal.fire({
-                  icon: "error",
-                  title: "Something went wrong",
-                  text: "Unable to sign up. Please try again.",
-                });
-              }
-            })
-  
-            .catch((error) => {
-              console.error("User Save Error:", error);
-              Swal.fire({
-                icon: "error",
-                title: "Database Save Failed",
-                text: error.message || "Please try again.",
-              });
-            });
-        })
-        .catch((error) => {
+      // 🧪 Check if user already exists in DB
+      try {
+        const res = await axiosPublic.get(`/users/${user.email}`);
+        if (res.data) {
+          navigate("/");
+          return;
+        }
+      } catch (error) {
+        // Expected 404 means user doesn't exist
+        if (error.response?.status !== 404) {
+          console.error("User Check Error:", error);
           Swal.fire({
             icon: "error",
-            title: "Google Sign-in Failed",
-            text: error.message || "Please try again.",
+            title: "Something went wrong",
+            text: "Failed to check user status. Please try again.",
           });
-        })
-    };
+          return;
+        }
+      }
+
+      // 🧾 Create new user entry in DB
+      const newUser = {
+        name: user.displayName || "Anonymous",
+        email: user.email,
+        image: user.photoURL || "",
+        role: "user",
+      };
+
+      const saveRes = await axiosPublic.post("/users", newUser);
+
+      if (saveRes.data.insertedId) {
+        Swal.fire({
+          icon: "success",
+          title: `Welcome ${newUser.name}!`,
+          text: "Google signup successful 🎉",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        navigate("/");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Signup failed",
+          text: "Unable to save user info. Please try again later.",
+        });
+      }
+    } catch (error) {
+      console.error("Google Sign-in Error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Google Sign-in Failed",
+        text: error.message || "Something went wrong. Please try again.",
+      });
+    }
+  };
 
   return (
     <div
@@ -302,7 +289,34 @@ const Login = () => {
               type="submit"
               className="w-full bg-[#D1A054] hover:bg-[#D1A054B2] text-white py-3 rounded-md font-semibold uppercase tracking-wide cursor-pointer"
             >
-              Sign In
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg
+                    className="animate-spin h-5 w-5 mr-3"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0
+                      a12 12 0 100 24 12 12 0 000-24z"
+                    ></path>
+                  </svg>
+                  Loading...
+                </span>
+              ) : (
+                "Sign In"
+              )}
             </button>
           </form>
 
@@ -320,7 +334,7 @@ const Login = () => {
           <div className="mt-6">
             <button
               type="button"
-              onClick={handleGoogleSignup}
+              onClick={handleGoogleLogin}
               className="w-full flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-md bg-white transition cursor-pointer hover:shadow-md"
             >
               <img

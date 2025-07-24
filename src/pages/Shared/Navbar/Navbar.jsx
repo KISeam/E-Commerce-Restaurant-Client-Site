@@ -4,10 +4,12 @@ import { AuthContext } from "../../../providers/AuthProvider";
 import userImg from "../../../assets/others/profile.png";
 import { FaShoppingCart } from "react-icons/fa";
 import useCart from "../../../hooks/useCart";
+import useAdmin from "../../../hooks/useAdmin";
 
 const Navbar = () => {
   const { user, dbUser, logout } = useContext(AuthContext);
   const [cart] = useCart();
+  const [isAdmin] = useAdmin();
 
   const handleLogout = () => {
     logout()
@@ -17,10 +19,16 @@ const Navbar = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "Contact Us", path: "/contact" },
-    { name: "Dashboard", path: "/dashboard" },
+    ...(user
+      ? [
+          isAdmin
+            ? { name: "Dashboard", path: "/dashboard/adminHome" }
+            : { name: "Dashboard", path: "/dashboard/userHome" },
+        ]
+      : []),
     { name: "Our Menu", path: "/menu" },
-    { name: "Our Shop", path: "/order" },
+    { name: "Order", path: "/order" },
+    { name: "Contact Us", path: "/contact" },
   ];
 
   return (

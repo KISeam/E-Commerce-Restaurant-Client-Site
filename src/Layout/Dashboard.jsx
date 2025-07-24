@@ -12,13 +12,13 @@ import {
 } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
 import useCart from "../hooks/useCart";
-// import useAdmin from "../hooks/useAdmin";
+import useAdmin from "../hooks/useAdmin";
 
 const Dashboard = () => {
   const [cart] = useCart();
 
   // TODO: get isAdmin value from the database
-  // const [isAdmin] = useAdmin();
+  const [isAdmin] = useAdmin();
 
   const navLinkStyles = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-300 ${
@@ -40,7 +40,7 @@ const Dashboard = () => {
 
         <nav className="space-y-2">
           {/* Admin Navigation (if isAdmin is true) */}
-          {false ? (  // Change this `true` to `isAdmin` after implementing the `useAdmin` hook
+          {isAdmin ? (  // Change this `true` to `isAdmin` after implementing the `useAdmin` hook
             <>
               <NavLink to="/dashboard/adminHome" className={navLinkStyles}>
                 <FaHome />
@@ -48,7 +48,7 @@ const Dashboard = () => {
               </NavLink>
               <NavLink to="/dashboard/addItems" className={navLinkStyles}>
                 <FaUtensils />
-                <span>Add Items</span>
+                <span>Add New Items</span>
               </NavLink>
               <NavLink to="/dashboard/manageItems" className={navLinkStyles}>
                 <FaList />
@@ -58,7 +58,7 @@ const Dashboard = () => {
                 <FaBook />
                 <span>Manage Bookings</span>
               </NavLink>
-              <NavLink to="/dashboard/users" className={navLinkStyles}>
+              <NavLink to="/dashboard/allUsers" className={navLinkStyles}>
                 <FaUsers />
                 <span>All Users</span>
               </NavLink>
@@ -105,7 +105,7 @@ const Dashboard = () => {
             <FaSearch />
             <span>Menu</span>
           </NavLink>
-          <NavLink to="/order/contact" className={navLinkStyles}>
+          <NavLink to="/contact" className={navLinkStyles}>
             <FaEnvelope />
             <span>Contact</span>
           </NavLink>

@@ -58,3 +58,8 @@
     height: 50vh !important; /* Further reduce height for very small screens */
   }
 }
+
+.orange-checkbox:checked {
+  background-color: #f97316 !important; /* orange-500 */
+  border-color: #f97316 !important;
+}

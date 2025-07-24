@@ -2,48 +2,19 @@ import React, { useContext } from "react";
 import { AuthContext } from "../../../providers/AuthProvider";
 import Swal from "sweetalert2";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useCart from "../../../hooks/useCart";
 
 const MenuCart = ({ cartDetails }) => {
-  const { name, image, recipe, price, _id } = cartDetails;
+  const { name, image, recipe, price, _id, category } = cartDetails;
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
   const axiosSecure = useAxiosSecure();
-  const [, refetch] = useCart();
+  const [cart, refetch] = useCart();
 
-  const handleAddToCart = () => {
-    if (user && user.email) {
-      const cartItem = {
-        menuId: _id, // food id
-        email: user.email, // logged-in user email
-        name, // ✅ required in schema
-        image,
-        price,
-        quantity: 1,
-      };
-
-      axiosSecure
-        .post("/carts", cartItem)
-        .then((res) => {
-          if (res.data._id || res.data.insertedId) {
-            Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title: "Item added to cart",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-            // Refetch cart to update the cart count
-            refetch();
-          }
-        })
-        .catch((err) => {
-          console.error("Failed to add to cart", err.response?.data || err);
-        });
-    } else {
+  const handleAddToCart = async () => {
+    if (!user || !user.email) {
       Swal.fire({
         title: "You are not Logged In",
         text: "Please login to add to the cart",
@@ -56,6 +27,60 @@ const MenuCart = ({ cartDetails }) => {
         if (result.isConfirmed) {
           navigate("/login", { state: { from: location } });
         }
+      });
+      return;
+    }
+
+    try {
+      // Check if item already exists in cart
+      const existingItem = cart.find(item => item.menuId === _id && item.email === user.email);
+
+      if (existingItem) {
+        // Update quantity if item exists
+        const newQuantity = existingItem.quantity + 1;
+        await axiosSecure.patch(`/carts/${existingItem._id}`, { 
+          quantity: newQuantity 
+        });
+        
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Quantity increased",
+          text: `${name} quantity updated to ${newQuantity}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        // Add new item if it doesn't exist
+        const cartItem = {
+          menuId: _id,
+          email: user.email,
+          name,
+          image,
+          price,
+          category,
+          quantity: 1,
+        };
+
+        await axiosSecure.post("/carts", cartItem);
+        
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Item added to cart",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+
+      // Refetch cart to update UI
+      refetch();
+    } catch (err) {
+      console.error("Failed to update cart", err.response?.data || err);
+      Swal.fire({
+        icon: "error",
+        title: "Failed to update cart",
+        text: "Please try again later",
       });
     }
   };
@@ -74,7 +99,7 @@ const MenuCart = ({ cartDetails }) => {
         </h3>
         <p className="md:text-lg text-gray-600 mt-1 line-clamp-2">{recipe}</p>
         <button
-          onClick={() => handleAddToCart(cartDetails)}
+          onClick={handleAddToCart}
           className="btn btn-outline bg-[#E8E8E8] hover:bg-[#1F2937] border-0 border-b-4 text-[#BB8506] uppercase md:text-lg px-8 py-5 rounded-lg mt-3 md:mt-6"
         >
           ADD TO CART

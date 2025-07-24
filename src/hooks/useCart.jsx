@@ -1,15 +1,18 @@
+// useCart.jsx ✅ FIXED
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
-import { axiosSecure } from "./useAxiosSecure";
-import { useContext } from "react";
+import React, { useContext } from "react";
+import useAxiosSecure from "./useAxiosSecure"; // ✅ default import
 import { AuthContext } from "../providers/AuthProvider";
 
 const useCart = () => {
   const { user } = useContext(AuthContext);
+  const axiosSecure = useAxiosSecure(); // ✅ call the hook
+
   const { refetch, data: cart = [], isLoading } = useQuery({
     queryKey: ["cart", user?.email],
+    enabled: !!user?.email, // ensures it doesn't run with null
     queryFn: async () => {
-      const response = await axiosSecure.get(`/carts?email=${user?.email}`);
+      const response = await axiosSecure.get(`/carts?email=${user.email}`);
       return response.data;
     },
   });
