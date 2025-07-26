@@ -1,6 +1,6 @@
 import React from "react";
 import Banner from "../Banner/Banner";
-import Category from "../Category/category";
+import Category from "../Category/Category";
 import PopularMenu from "../PopularMenu/PopularMenu";
 import image from "../../../assets/home/chef-service.jpg";
 import MenuCarts from "../MenuCarts/MenuCarts";
