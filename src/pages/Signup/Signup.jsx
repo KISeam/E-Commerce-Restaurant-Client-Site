@@ -258,7 +258,7 @@ const Signup = () => {
             </div>
 
             {/* Profile Picture */}
-            <div>
+            {/* <div>
               <label className="block mb-1 font-medium">Profile Picture</label>
               <input
                 type="text"
@@ -268,7 +268,7 @@ const Signup = () => {
                 onChange={handleFormChange}
                 className="w-full border px-4 py-2 rounded-md bg-white focus:outline-none border-gray-300"
               />
-            </div>
+            </div> */}
 
             <button
               type="submit"
