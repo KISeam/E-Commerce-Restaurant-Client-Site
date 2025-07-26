@@ -6,16 +6,19 @@ import {
   FaHome,
   FaList,
   FaSearch,
+  FaShippingFast,
   FaShoppingCart,
   FaUsers,
   FaUtensils,
 } from "react-icons/fa";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import useCart from "../hooks/useCart";
 import useAdmin from "../hooks/useAdmin";
+import { useEffect } from "react";
 
 const Dashboard = () => {
   const [cart] = useCart();
+  const location = useLocation();
 
   // TODO: get isAdmin value from the database
   const [isAdmin] = useAdmin();
@@ -26,6 +29,10 @@ const Dashboard = () => {
         ? "bg-orange-500 text-white shadow-sm"
         : "text-gray-600 hover:bg-orange-100 hover:text-orange-600"
     }`;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-100 font-sans">
@@ -40,7 +47,7 @@ const Dashboard = () => {
 
         <nav className="space-y-2">
           {/* Admin Navigation (if isAdmin is true) */}
-          {isAdmin ? (  // Change this `true` to `isAdmin` after implementing the `useAdmin` hook
+          {isAdmin ? ( // Change this `true` to `isAdmin` after implementing the `useAdmin` hook
             <>
               <NavLink to="/dashboard/adminHome" className={navLinkStyles}>
                 <FaHome />
@@ -54,9 +61,13 @@ const Dashboard = () => {
                 <FaList />
                 <span>Manage Items</span>
               </NavLink>
-              <NavLink to="/dashboard/bookings" className={navLinkStyles}>
+              <NavLink to="/dashboard/addCategory" className={navLinkStyles}>
+                <FaAd />
+                <span>Add Category</span>
+              </NavLink>
+              <NavLink to="/dashboard/manageOrders" className={navLinkStyles}>
                 <FaBook />
-                <span>Manage Bookings</span>
+                <span>Manage Orders</span>
               </NavLink>
               <NavLink to="/dashboard/allUsers" className={navLinkStyles}>
                 <FaUsers />
@@ -70,9 +81,9 @@ const Dashboard = () => {
                 <FaHome />
                 <span>User Home</span>
               </NavLink>
-              <NavLink to="/dashboard/history" className={navLinkStyles}>
+              <NavLink to="/dashboard/orderHistory" className={navLinkStyles}>
                 <FaCalendar />
-                <span>Not History</span>
+                <span>Order History</span>
               </NavLink>
               <NavLink to="/dashboard/cart" className={navLinkStyles}>
                 <FaShoppingCart />
@@ -83,13 +94,13 @@ const Dashboard = () => {
                   </span>
                 </div>
               </NavLink>
-              <NavLink to="/dashboard/review" className={navLinkStyles}>
+              <NavLink to="/dashboard/trackOrder" className={navLinkStyles}>
+                <FaShippingFast />
+                <span>Track Order</span>
+              </NavLink>
+              <NavLink to="/dashboard/addReview" className={navLinkStyles}>
                 <FaAd />
                 <span>Add a Review</span>
-              </NavLink>
-              <NavLink to="/dashboard/paymentHistory" className={navLinkStyles}>
-                <FaList />
-                <span>Real Payment History</span>
               </NavLink>
             </>
           )}

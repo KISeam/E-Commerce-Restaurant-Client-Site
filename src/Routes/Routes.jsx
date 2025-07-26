@@ -16,6 +16,12 @@ import ManageItems from "../pages/Dashboard/ManageItems/ManageItems";
 import Payment from "../pages/Dashboard/Payment/Payment";
 import UserHome from "../pages/Dashboard/UserHome/UserHome";
 import AdminHome from "../pages/Dashboard/AdminHome/AdminHome";
+import ManageOrders from "../pages/Dashboard/ManageOrders/ManageOrders";
+import OrderHistory from "../pages/Dashboard/OrderHistory/OrderHistory";
+import TrackOrder from "../pages/Dashboard/TrackOrder/TrackOrder";
+import AddReview from "../pages/Dashboard/AddReview/AddReview";
+import AddCategory from "../pages/Dashboard/AddCategory/AddCategory";
+import errorPageImg from "../assets/404.gif";
 
 export const router = createBrowserRouter([
   {
@@ -73,6 +79,19 @@ export const router = createBrowserRouter([
         path: "payment",
         element: <Payment />,
       },
+      {
+        path: "orderHistory",
+        element: <OrderHistory />,
+      },
+      {
+        path: "trackOrder",
+        element: <TrackOrder />,
+      },
+      {
+        path: "addReview",
+        element: <AddReview />,
+      },
+
       // Admin Routes
       {
         path: "adminHome",
@@ -87,6 +106,14 @@ export const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <AddItems />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "addCategory",
+        element: (
+          <AdminRoute>
+            <AddCategory />
           </AdminRoute>
         ),
       },
@@ -106,6 +133,22 @@ export const router = createBrowserRouter([
           </AdminRoute>
         ),
       },
+      {
+        path: "manageOrders",
+        element: (
+          <AdminRoute>
+            <ManageOrders />
+          </AdminRoute>
+        ),
+      },
     ],
+  },
+  {
+    path: "*",
+    element: (
+      <div className="flex justify-center items-center h-screen">
+        <img src={errorPageImg} alt="Error Page Image" className="h-full" />
+      </div>
+    ),
   },
 ]);

@@ -145,30 +145,26 @@ const AdminHome = () => {
         <StatCard
           title="Revenue"
           value={`$${adminStats?.revenue?.toFixed(2) || "0.00"}`}
-          icon={<FaDollarSign className="h-6 w-6" />}
+          icon={<FaDollarSign className="text-2xl text-orange-600" />}
           color="bg-gradient-to-r from-orange-400 to-orange-600"
-          trend="+12.5% from last month"
         />
         <StatCard
           title="Customers"
           value={adminStats?.users || "0"}
-          icon={<FaUsers className="h-6 w-6" />}
+          icon={<FaUsers className="text-2xl text-orange-600" />}
           color="bg-gradient-to-r from-amber-400 to-amber-600"
-          trend="+8.2% from last month"
         />
         <StatCard
           title="Products"
           value={adminStats?.menuItems || "0"}
-          icon={<FaBox className="h-6 w-6" />}
+          icon={<FaBox className="text-2xl text-orange-600" />}
           color="bg-gradient-to-r from-yellow-400 to-yellow-600"
-          trend="+5 new products"
         />
         <StatCard
           title="Orders"
           value={adminStats?.orders || "0"}
-          icon={<FaShoppingCart className="h-6 w-6" />}
+          icon={<FaShoppingCart className="text-2xl text-orange-600" />}
           color="bg-gradient-to-r from-red-400 to-red-600"
-          trend="+14.3% from last month"
         />
       </div>
 
@@ -579,11 +575,10 @@ const StatCard = ({ title, value, icon, color, trend }) => {
     >
       <div className="flex justify-between items-center">
         <div>
-          <p className="text-sm font-semibold tracking-wide uppercase opacity-85 mb-2">
+          <h3 className="font-semibold tracking-wide uppercase mb-2">
             {title}
-          </p>
+          </h3>
           <p className="text-3xl font-extrabold mb-3">{value}</p>
-          <p className="text-xs font-medium opacity-85">{trend}</p>
         </div>
         <div className="bg-white bg-opacity-25 p-4 rounded-full flex items-center justify-center">
           {icon}

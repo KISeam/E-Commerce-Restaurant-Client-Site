@@ -13,7 +13,13 @@ const Home = () => {
     <div className="bg-white">
       <Banner />
       <Category />
-      <Cover title={"BISTRO BOSS"} subTitle={"Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus, libero accusamus laborum deserunt ratione dolor officiis praesentium! Deserunt magni sapiente deleniti dolor dolorem ex, nihil voluptas deserunt, incidunt quibusdam nemo."} image={image} />
+      <Cover
+        title={"BISTRO BOSS"}
+        subTitle={
+          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus, libero accusamus laborum deserunt ratione dolor officiis praesentium! Deserunt magni sapiente deleniti dolor dolorem ex, nihil voluptas deserunt, incidunt quibusdam nemo."
+        }
+        image={image}
+      />
       <PopularMenu />
       <MenuCarts />
       <Featured />

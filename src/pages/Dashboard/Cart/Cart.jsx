@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useCart from "../../../hooks/useCart";
 import useSelectedProducts from "../../../hooks/useSelectedProducts";
+import SectionTitle from "../../../components/SectionTitle/SectionTitle";
 
 const Cart = () => {
   const [cart, refetch, isLoading] = useCart();
@@ -166,8 +167,9 @@ const Cart = () => {
 
   return (
     <div className="p-4 md:p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-        <div className="w-full md:w-2/3">
+      <SectionTitle subHeading={"Check it out"} heading={"YOUR CART"} />
+      <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
+        <div className="w-full lg:w-2/3">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="bg-gradient-to-r from-orange-50 to-orange-100 px-6 py-4 border-b border-orange-100">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -268,7 +270,7 @@ const Cart = () => {
             </Link>
           </div>
         </div>
-        <div className="w-full md:w-1/3">
+        <div className="w-full lg:w-1/3">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-6">
             <div className="bg-gradient-to-r from-orange-50 to-orange-100 px-6 py-4 border-b border-orange-100">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">

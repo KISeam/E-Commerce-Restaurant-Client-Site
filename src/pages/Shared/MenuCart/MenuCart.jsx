@@ -33,15 +33,17 @@ const MenuCart = ({ cartDetails }) => {
 
     try {
       // Check if item already exists in cart
-      const existingItem = cart.find(item => item.menuId === _id && item.email === user.email);
+      const existingItem = cart.find(
+        (item) => item.menuId === _id && item.email === user.email
+      );
 
       if (existingItem) {
         // Update quantity if item exists
         const newQuantity = existingItem.quantity + 1;
-        await axiosSecure.patch(`/carts/${existingItem._id}`, { 
-          quantity: newQuantity 
+        await axiosSecure.patch(`/carts/${existingItem._id}`, {
+          quantity: newQuantity,
         });
-        
+
         Swal.fire({
           position: "top-end",
           icon: "success",
@@ -63,7 +65,7 @@ const MenuCart = ({ cartDetails }) => {
         };
 
         await axiosSecure.post("/carts", cartItem);
-        
+
         Swal.fire({
           position: "top-end",
           icon: "success",
@@ -94,7 +96,7 @@ const MenuCart = ({ cartDetails }) => {
         </div>
       </div>
       <div className="p-4 md:py-8 md:px-10 text-center">
-        <h3 className="text-lg md:text-xl text-[#151515] font-semibold">
+        <h3 className="text-lg md:text-xl text-[#151515] font-semibold line-clamp-1">
           {name}
         </h3>
         <p className="md:text-lg text-gray-600 mt-1 line-clamp-2">{recipe}</p>

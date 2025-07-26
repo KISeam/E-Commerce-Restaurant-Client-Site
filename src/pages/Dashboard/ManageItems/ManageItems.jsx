@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import useMenu from "../../../hooks/useMenu";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
 import { Link } from "react-router-dom";
+import useCategories from "../../../hooks/useCategories";
 
 const imageHostingApiKey = import.meta.env.VITE_IMAGE_HOSTING_KEY;
 const imageHostingUrl = `https://api.imgbb.com/1/upload?key=${imageHostingApiKey}`;
@@ -32,7 +33,7 @@ const ManageItems = () => {
   const itemsPerPage = 10;
   const axiosSecure = useAxiosSecure();
   const axiosPublic = useAxiosPublic();
-  const categories = ["salad", "soup", "pizza", "dessert", "drinks"]; // Consistent with AddItems
+  const { categories, loading } = useCategories();
 
   // Handle edit button click
   const handleEdit = (item) => {
@@ -306,11 +307,16 @@ const ManageItems = () => {
                 } rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent`}
               >
                 <option value="">Select category</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </option>
-                ))}
+                {loading ? (
+                  <option disabled>Loading categories...</option>
+                ) : (
+                  categories.map((category) => (
+                    <option key={category._id} value={category.name}>
+                      {category.name.charAt(0).toUpperCase() +
+                        category.name.slice(1)}
+                    </option>
+                  ))
+                )}
               </select>
               {errors.category && (
                 <p className="mt-1 text-sm text-red-500">{errors.category}</p>
@@ -474,7 +480,7 @@ const ManageItems = () => {
   // Render table view
   return (
     <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="container mx-auto">
         <SectionTitle
           heading="Manage Items"
           subHeading="View, edit, and delete menu items"
@@ -537,7 +543,7 @@ const ManageItems = () => {
                     Last Updated
                   </h3>
                   <p className="text-2xl font-semibold text-gray-900">
-                    {lastUpdated ? lastUpdated : "Not yet updated"}
+                    {lastUpdated ? lastUpdated : "N/A"}
                   </p>
                 </div>
               </div>

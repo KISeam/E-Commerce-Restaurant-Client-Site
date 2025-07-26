@@ -4,18 +4,24 @@ import BistroBoss from "../Shared/BistroBoss/BistroBoss";
 import useMenu from "../../hooks/useMenu";
 import MenuCart from "../Shared/MenuCart/MenuCart";
 import { useParams, useNavigate } from "react-router-dom";
+import useCategories from "../../hooks/useCategories";
 
-const categories = ["offered", "salad", "pizza", "soup", "dessert", "drinks"];
 const ITEMS_PER_PAGE = 6;
 
 const Order = () => {
+  const { categories } = useCategories();
   const { category } = useParams();
   const navigate = useNavigate();
   const [menu] = useMenu();
 
-  const currentCategory = categories.includes(category) ? category : "salad";
+  const currentCategory = categories
+    .map((c) => c.name.toLowerCase())
+    .includes(category?.toLowerCase())
+    ? category.toLowerCase()
+    : "salad";
+
   const filteredItems = menu.filter(
-    (item) => item.category === currentCategory
+    (item) => item.category?.toLowerCase() === currentCategory
   );
 
   // Pagination states
@@ -46,19 +52,22 @@ const Order = () => {
       <div className="py-12 md:py-16 container mx-auto">
         {/* Category Buttons */}
         <div className="flex justify-center gap-4 flex-wrap mb-8">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className={`px-4 py-2 rounded-lg font-semibold transition cursor-pointer ${
-                currentCategory === cat
-                  ? "text-[#BB8506] border-0 border-b-4 border-[#BB8506]"
-                  : "text-black"
-              }`}
-              onClick={() => handleCategoryClick(cat)}
-            >
-              {cat.toUpperCase()}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const catName = cat.name.toLowerCase();
+            return (
+              <button
+                key={catName}
+                className={`px-4 py-2 rounded-lg font-semibold transition cursor-pointer ${
+                  currentCategory === catName
+                    ? "text-[#BB8506] border-0 border-b-4 border-[#BB8506]"
+                    : "text-black"
+                }`}
+                onClick={() => handleCategoryClick(catName)}
+              >
+                {cat.name.toUpperCase()}
+              </button>
+            );
+          })}
         </div>
 
         {/* Filtered Items (Paginated) */}

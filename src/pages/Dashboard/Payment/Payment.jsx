@@ -174,9 +174,9 @@ const Payment = () => {
           phoneNumber: formData.phoneNumber,
           address,
         },
+        userEmail: user?.email,
         items: selectedProducts,
         total: parseFloat(calculateTotal()),
-        paymentMethod: "cash_on_delivery",
         orderDate: new Date().toISOString(),
         status: "pending",
       };
@@ -203,10 +203,12 @@ const Payment = () => {
 
       navigate("/dashboard/cart");
     } catch (error) {
-      console.error('Order submission error:', error);
+      console.error("Order submission error:", error);
       Swal.fire({
         title: "Error!",
-        text: error.response?.data?.message || "Failed to place order. Please try again.",
+        text:
+          error.response?.data?.message ||
+          "Failed to place order. Please try again.",
         icon: "error",
         confirmButtonColor: "#d97706",
       });
