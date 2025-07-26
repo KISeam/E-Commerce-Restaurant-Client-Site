@@ -6,14 +6,14 @@ import useMenu from "../../../hooks/useMenu";
 
 const PopularMenu = () => {
   const [menu] = useMenu();
-  const populerItems = menu.filter((item) => item.category === "popular");
+  const dessertItems = menu.filter((item) => item.category === "dessert");
 
   return (
     <>
       <div className="my-12 md:my-16 container mx-auto">
         <SectionTitle subHeading={"Check it out"} heading={"FROM OUR MENU"} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {populerItems.map((item) => (
+          {dessertItems.map((item) => (
             <MenuItem key={item._id} item={item} />
           ))}
         </div>
