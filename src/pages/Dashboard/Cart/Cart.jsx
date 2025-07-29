@@ -194,7 +194,7 @@ const Cart = () => {
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="object-contain w-16 h-16"
+                      className="object-cover w-full h-full"
                     />
                   </div>
                   <div className="flex-1 w-full">
