@@ -25,8 +25,6 @@ const Cart = () => {
     calculateSelectedTotal,
   } = useSelectedProducts(cart);
 
-  // console.log("selectedProducts items:", selectedProducts);
-
   useEffect(() => {
     if (cart.length > 0) {
       setLocalCart(
@@ -119,8 +117,8 @@ const Cart = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="relative mb-8">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-orange-100 to-orange-200 flex items-center justify-center">
-            <FiShoppingCart className="text-orange-500 text-4xl animate-pulse" />
+          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-orange-100 to-orange-200 flex items-center justify-center animate-pulse">
+            <FiShoppingCart className="text-orange-500 text-4xl" />
           </div>
           <div className="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
             <span className="text-white text-sm font-bold">0</span>
@@ -155,7 +153,7 @@ const Cart = () => {
           </p>
           <Link
             to="/order"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all shadow-md"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all shadow-md hover:shadow-lg"
           >
             <FaShoppingBag className="text-lg" />
             <span>Browse Products</span>
@@ -167,92 +165,124 @@ const Cart = () => {
 
   return (
     <div className="p-4 md:p-6">
-      <SectionTitle subHeading={"Check it out"} heading={"YOUR CART"} />
-      <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
-        <div className="w-full lg:w-2/3">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gradient-to-r from-orange-50 to-orange-100 px-6 py-4 border-b border-orange-100">
-              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <FiShoppingCart className="text-orange-500" />
-                Shopping Cart ({cart.length || 0} items)
-              </h2>
+      <SectionTitle
+        subHeading={"Review your items"}
+        heading={"Your Shopping Cart"}
+      />
+
+      <div className="flex flex-col lg:flex-row gap-8 mt-8">
+        {/* Cart Items */}
+        <div className="flex-1">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <FiShoppingCart className="text-orange-500 text-xl" />
+                  Shopping Cart ({cart.length || 0} items)
+                </h2>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="select-all"
+                    className="checkbox orange-checkbox border-gray-300 cursor-pointer"
+                    checked={selectedProducts.length === cart.length}
+                    onChange={() => {
+                      if (selectedProducts.length === cart.length) {
+                        selectedIds.forEach((id) => toggleProductSelection(id));
+                      } else {
+                        cart.forEach((item) => {
+                          if (!selectedIds.includes(item._id)) {
+                            toggleProductSelection(item._id);
+                          }
+                        });
+                      }
+                    }}
+                  />
+                  <label
+                    htmlFor="select-all"
+                    className="text-sm font-medium text-gray-700 cursor-pointer"
+                  >
+                    Select all
+                  </label>
+                </div>
+              </div>
             </div>
 
             <div className="divide-y divide-gray-100">
               {localCart.map((item) => (
                 <div
                   key={item._id}
-                  className="p-5 md:p-6 flex flex-col md:flex-row gap-6 items-start border-b border-gray-100 last:border-b-0 hover:bg-orange-50 transition-colors duration-200 rounded-lg"
+                  className="p-5 flex flex-col sm:flex-row gap-5 items-start hover:bg-gray-50 transition-colors duration-200"
                 >
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts.some((p) => p._id === item._id)}
-                    onChange={() => toggleProductSelection(item._id)}
-                    className="checkbox orange-checkbox border-gray-300 cursor-pointer"
-                  />
-                  <div className="bg-white border border-gray-200 rounded-xl overflow-hidden w-24 h-24 flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="object-cover w-full h-full"
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.some((p) => p._id === item._id)}
+                      onChange={() => toggleProductSelection(item._id)}
+                      className="checkbox orange-checkbox border-gray-300 cursor-pointer"
                     />
+                    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden w-20 h-20 flex items-center justify-center flex-shrink-0 shadow-sm">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
                   </div>
+
                   <div className="flex-1 w-full">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800 text-lg md:text-xl mb-1">
-                          {item.name}
-                        </h3>
-                        <p className="text-gray-500 text-sm mb-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <h3 className="font-semibold text-gray-800 text-base sm:text-lg">
+                            {item.name}
+                          </h3>
+                          <div className="text-right">
+                            <p className="text-lg font-semibold text-orange-600">
+                              ${(item.price * item.quantity).toFixed(2)}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              ${item.price.toFixed(2)} each
+                            </p>
+                          </div>
+                        </div>
+
+                        <p className="text-gray-500 text-sm mt-1 mb-3">
                           SKU: {item._id.substring(0, 8)}
                         </p>
-                        <div className="flex items-center gap-2 mb-4">
-                          <span className="text-lg font-bold text-orange-600">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </span>
-                          <span className="text-sm text-gray-500">
-                            (${item.price.toFixed(2)} × {item.quantity})
-                          </span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleDelete(item._id)}
-                        className="text-gray-400 hover:text-red-500 transition cursor-pointer p-2 rounded-full hover:bg-red-50 self-start"
-                        title="Remove from cart"
-                      >
-                        <FaTrashAlt size={18} />
-                      </button>
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-gray-100">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center border border-gray-300 rounded-full overflow-hidden bg-white shadow-sm">
-                          <button
-                            onClick={() => handleQuantityUpdate(item._id, -1)}
-                            disabled={item.quantity <= 1}
-                            className={`p-3 ${
-                              item.quantity <= 1
-                                ? "text-gray-300 cursor-not-allowed"
-                                : "text-orange-500 hover:bg-orange-50 cursor-pointer"
-                            }`}
-                          >
-                            <FaMinus size={14} />
-                          </button>
-                          <div className="text-base font-bold w-14 text-center py-2 text-orange-600 bg-gray-50">
-                            {item.quantity}
+
+                        <div className="flex flex-wrap items-center gap-4 mt-4">
+                          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white shadow-sm">
+                            <button
+                              onClick={() => handleQuantityUpdate(item._id, -1)}
+                              disabled={item.quantity <= 1}
+                              className={`p-2 ${
+                                item.quantity <= 1
+                                  ? "text-gray-300 cursor-not-allowed"
+                                  : "text-orange-500 hover:bg-orange-50 cursor-pointer"
+                              }`}
+                            >
+                              <FaMinus size={12} />
+                            </button>
+                            <div className="text-base font-bold w-12 text-center py-2 text-orange-600 bg-gray-50">
+                              {item.quantity}
+                            </div>
+                            <button
+                              onClick={() => handleQuantityUpdate(item._id, 1)}
+                              className="p-2 text-orange-500 hover:bg-orange-50 cursor-pointer"
+                            >
+                              <FaPlus size={12} />
+                            </button>
                           </div>
+
                           <button
-                            onClick={() => handleQuantityUpdate(item._id, 1)}
-                            className="p-3 text-orange-500 hover:bg-orange-50 cursor-pointer"
+                            onClick={() => handleDelete(item._id)}
+                            className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition cursor-pointer text-sm"
                           >
-                            <FaPlus size={14} />
+                            <FaTrashAlt size={14} />
+                            <span>Remove</span>
                           </button>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500 mb-1">Item total</p>
-                        <p className="text-lg font-semibold text-orange-600">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </p>
                       </div>
                     </div>
                   </div>
@@ -260,47 +290,53 @@ const Cart = () => {
               ))}
             </div>
           </div>
-          <div className="mt-4">
+
+          <div className="mt-6">
             <Link
               to="/order"
-              className="flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium transition"
+              className="inline-flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium transition hover:underline"
             >
               <FaArrowLeft className="text-sm" />
               Continue Shopping
             </Link>
           </div>
         </div>
-        <div className="w-full lg:w-1/3">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-6">
-            <div className="bg-gradient-to-r from-orange-50 to-orange-100 px-6 py-4 border-b border-orange-100">
+
+        {/* Order Summary */}
+        <div className="w-full lg:w-96">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden sticky top-6">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <FiPackage className="text-orange-500" />
+                <FiPackage className="text-orange-500 text-xl" />
                 Order Summary
               </h2>
             </div>
+
             <div className="p-6">
-              <div className="space-y-4 mb-6 text-orange-600">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">
-                    Subtotal ({selectedProducts.length} items)
-                  </span>
+              <div className="space-y-3 mb-6">
+                <div className="flex justify-between text-gray-700">
+                  <span>Subtotal ({selectedProducts.length} items)</span>
                   <span className="font-medium">
                     ${calculateSelectedTotal().toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Shipping</span>
+
+                <div className="flex justify-between text-gray-700">
+                  <span>Shipping</span>
                   <span className="font-medium">
                     {calculateSelectedTotal() > 50 ? "FREE" : "$5.99"}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tax (8%)</span>
+
+                <div className="flex justify-between text-gray-700">
+                  <span>Tax (8%)</span>
                   <span className="font-medium">
                     ${(calculateSelectedTotal() * 0.08).toFixed(2)}
                   </span>
                 </div>
-                <div className="h-px bg-gray-100 my-3"></div>
+
+                <div className="h-px bg-gray-200 my-4"></div>
+
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
                   <span className="text-orange-600">
@@ -313,24 +349,30 @@ const Cart = () => {
                   </span>
                 </div>
               </div>
+
               <Link
                 to="/dashboard/payment"
                 state={{
-                  cart: cart, // ✅ এটা তোমার useCart() থেকে এসেছে
-                  selectedIds: selectedIds, // ✅ এটা এসেছে useSelectedProducts(cart) থেকে
+                  cart: cart,
+                  selectedIds: selectedIds,
                 }}
               >
                 <button
                   disabled={selectedProducts.length === 0}
-                  className={`w-full py-3 px-4 rounded-xl font-medium text-white shadow-md transition-all transform hover:-translate-y-0.5 mb-4  ${
+                  className={`w-full py-3 px-4 rounded-lg font-medium text-white shadow-md transition-all ${
                     selectedProducts.length === 0
                       ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 cursor-pointer"
+                      : "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 cursor-pointer hover:shadow-lg"
                   }`}
                 >
                   Proceed to Checkout
                 </button>
               </Link>
+
+              <div className="mt-4 text-center text-sm text-gray-500">
+                <p>Free shipping on orders over $50</p>
+                <p>Taxes calculated at checkout</p>
+              </div>
             </div>
           </div>
         </div>

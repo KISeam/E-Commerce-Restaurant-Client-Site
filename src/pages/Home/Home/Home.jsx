@@ -47,7 +47,9 @@ const Home = () => {
   return (
     <div className="bg-white">
       <Banner />
-      <Category />
+      <div className="px-4 md:px-0">
+        <Category />
+      </div>
       <Cover
         title={"BISTRO BOSS"}
         subTitle={
@@ -55,8 +57,10 @@ const Home = () => {
         }
         image={image}
       />
-      <PopularMenu />
-      <MenuCarts />
+      <div className="px-4 md:px-0">
+        <PopularMenu />
+        <MenuCarts />
+      </div>
       <Featured />
       <Testimonials />
     </div>
