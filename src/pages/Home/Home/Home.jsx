@@ -10,16 +10,20 @@ import Cover from "../../Shared/Cover/Cover";
 import logo from "../../../assets/logo.png";
 
 const Home = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Simulate data loading (e.g., fetch or internal delay)
   useEffect(() => {
-    const loadAll = async () => {
-      // You can wait for actual fetches here if needed
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      setIsLoading(false);
-    };
-    loadAll();
+    const alreadyVisited = localStorage.getItem("homeVisited");
+
+    if (!alreadyVisited) {
+      setIsLoading(true);
+      const loadAll = async () => {
+        await new Promise((resolve) => setTimeout(resolve, 8000)); // 8 seconds
+        setIsLoading(false);
+        localStorage.setItem("homeVisited", "true");
+      };
+      loadAll();
+    }
   }, []);
 
   if (isLoading) {
