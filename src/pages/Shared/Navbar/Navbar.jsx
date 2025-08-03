@@ -30,19 +30,27 @@ const Navbar = () => {
       .catch((error) => console.log(error));
   };
 
-  const navItems = [
+  // Navigation items for all users
+  const commonNavItems = [
     { name: "Home", path: "/" },
-    ...(user
-      ? [
-          isAdmin
-            ? { name: "Dashboard", path: "/dashboard/adminHome" }
-            : { name: "Dashboard", path: "/dashboard/userHome" },
-        ]
-      : []),
     { name: "Our Menu", path: "/menu" },
     { name: "Order", path: "/order" },
     { name: "Contact Us", path: "/contact" },
   ];
+
+  // Navigation items for logged in users
+  const getAuthNavItems = () => {
+    if (!user) return [];
+
+    return [
+      {
+        name: "Dashboard",
+        path: isAdmin ? "/dashboard/adminHome" : "/dashboard/userHome",
+      },
+    ];
+  };
+
+  const navItems = [...commonNavItems, ...getAuthNavItems()];
 
   const handleMobileNavClick = (path) => {
     navigate(path);
@@ -155,26 +163,6 @@ const Navbar = () => {
                     className="mt-3 p-2 shadow menu menu-sm dropdown-content bg-black/90 backdrop-blur-sm rounded-box w-52 border border-gray-800"
                   >
                     <li>
-                      <NavLink
-                        to="/profile"
-                        className={({ isActive }) =>
-                          isActive ? "text-orange-500" : "text-white"
-                        }
-                      >
-                        Profile
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/settings"
-                        className={({ isActive }) =>
-                          isActive ? "text-orange-500" : "text-white"
-                        }
-                      >
-                        Settings
-                      </NavLink>
-                    </li>
-                    <li>
                       <button
                         onClick={handleLogout}
                         className="text-white hover:text-orange-500 text-left"
@@ -246,11 +234,11 @@ const Navbar = () => {
 
                     <nav className="flex-1">
                       <ul className="space-y-2">
-                        {navItems.map((item) => (
+                        {commonNavItems.map((item) => (
                           <li key={item.path}>
                             <button
                               onClick={() => handleMobileNavClick(item.path)}
-                              className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center ${
+                              className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center cursor-pointer ${
                                 isActive(item.path)
                                   ? "text-orange-500 bg-gray-900/50 hover:bg-gray-800"
                                   : "text-white hover:bg-gray-800"
@@ -266,37 +254,39 @@ const Navbar = () => {
                             </button>
                           </li>
                         ))}
+
+                        {user &&
+                          getAuthNavItems().map((item) => (
+                            <li key={item.path}>
+                              <button
+                                onClick={() => handleMobileNavClick(item.path)}
+                                className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center cursor-pointer ${
+                                  isActive(item.path)
+                                    ? "text-orange-500 bg-gray-900/50 hover:bg-gray-800"
+                                    : "text-white hover:bg-gray-800"
+                                }`}
+                              >
+                                <span className="font-medium">{item.name}</span>
+                                {isActive(item.path) && (
+                                  <motion.span
+                                    layoutId="mobileActiveIndicator"
+                                    className="w-1.5 h-1.5 rounded-full bg-orange-500 ml-2"
+                                  />
+                                )}
+                              </button>
+                            </li>
+                          ))}
                       </ul>
 
                       <div className="mt-8 pt-6 border-t border-gray-800">
                         {user ? (
                           <>
                             <button
-                              onClick={() => handleMobileNavClick("/profile")}
-                              className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center ${
-                                isActive("/profile")
-                                  ? "text-orange-500 bg-gray-900/50 hover:bg-gray-800"
-                                  : "text-white hover:bg-gray-800"
-                              }`}
-                            >
-                              <span className="font-medium">Profile</span>
-                            </button>
-                            <button
-                              onClick={() => handleMobileNavClick("/settings")}
-                              className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center ${
-                                isActive("/settings")
-                                  ? "text-orange-500 bg-gray-900/50 hover:bg-gray-800"
-                                  : "text-white hover:bg-gray-800"
-                              }`}
-                            >
-                              <span className="font-medium">Settings</span>
-                            </button>
-                            <button
                               onClick={() => {
                                 handleLogout();
                                 setMobileMenuOpen(false);
                               }}
-                              className="w-full text-left px-4 py-3 rounded-lg transition-colors text-red-400 hover:bg-gray-800 hover:text-red-300"
+                              className="w-full text-left px-4 py-3 rounded-lg transition-colors text-red-400 hover:bg-gray-800 hover:text-red-300 cursor-pointer"
                             >
                               <span className="font-medium">Logout</span>
                             </button>
@@ -318,8 +308,10 @@ const Navbar = () => {
                       {user && (
                         <div className="mt-4">
                           <button
-                            onClick={() => handleMobileNavClick("/dashboard/cart")}
-                            className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center ${
+                            onClick={() =>
+                              handleMobileNavClick("/dashboard/cart")
+                            }
+                            className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center cursor-pointer ${
                               isActive("/dashboard/cart")
                                 ? "text-orange-500 bg-gray-900/50 hover:bg-gray-800"
                                 : "text-white hover:bg-gray-800"
