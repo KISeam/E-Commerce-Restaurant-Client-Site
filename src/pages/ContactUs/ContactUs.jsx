@@ -169,7 +169,7 @@ const ContactUs = () => {
           subColor="text-gray-500"
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-20">
           <ContactCard
             icon={<FaPhone className="text-xl text-orange-600" />}
             title="PHONE"
@@ -197,8 +197,8 @@ const ContactUs = () => {
 
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
-            <div className="md:flex">
-              <div className="md:w-2/5 bg-gray-50 p-12 border-r border-gray-200">
+            <div className="lg:flex">
+              <div className="lg:w-2/5 bg-gray-50 p-12 border-r border-gray-200">
                 <h2 className="text-3xl font-serif font-light text-gray-800 mb-8">
                   How Can We Help?
                 </h2>
@@ -273,7 +273,7 @@ const ContactUs = () => {
                 </div>
               </div>
 
-              <div className="md:w-3/5 p-12">
+              <div className="lg:w-3/5 p-12">
                 <SectionTitle
                   subHeading={"SEND A MESSAGE"}
                   heading={"Contact Form"}

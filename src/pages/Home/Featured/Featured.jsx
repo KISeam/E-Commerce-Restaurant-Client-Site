@@ -1,5 +1,4 @@
 import React from "react";
-import featuredImg from "../../../assets/home/featured.jpg";
 
 const Featured = () => {
   return (
@@ -7,7 +6,7 @@ const Featured = () => {
       <div
         className="relative bg-no-repeat bg-center bg-cover"
         style={{
-          backgroundImage: `url(${featuredImg})`,
+          backgroundImage: `url("https://i.ibb.co/f3Vjd9j/featured.jpg")`,
           backgroundAttachment: "fixed",
         }}
       >
@@ -27,7 +26,10 @@ const Featured = () => {
 
           <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
             <div className="w-full lg:w-1/2">
-              <img src={featuredImg} alt="Featured Image" />
+              <img
+                src="https://i.ibb.co/f3Vjd9j/featured.jpg"
+                alt="Featured Image"
+              />
             </div>
             <div className="flex flex-col gap-5 text-center lg:text-left text-white w-full lg:w-1/2">
               <div>

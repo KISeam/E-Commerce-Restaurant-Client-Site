@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Banner from "../Banner/Banner";
 import Category from "../Category/Category";
 import PopularMenu from "../PopularMenu/PopularMenu";
-import image from "../../../assets/home/chef-service.jpg";
 import MenuCarts from "../MenuCarts/MenuCarts";
 import Featured from "../Featured/Featured";
 import Testimonials from "../Testimonials/Testimonials";
@@ -18,7 +17,7 @@ const Home = () => {
     if (!alreadyVisited) {
       setIsLoading(true);
       const loadAll = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 8000)); // 8 seconds
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 seconds
         setIsLoading(false);
         localStorage.setItem("homeVisited", "true");
       };
@@ -55,7 +54,7 @@ const Home = () => {
         subTitle={
           "Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus, libero accusamus laborum deserunt ratione dolor officiis praesentium! Deserunt magni sapiente deleniti dolor dolorem ex, nihil voluptas deserunt, incidunt quibusdam nemo."
         }
-        image={image}
+        image="https://i.ibb.co/fj98g1t/chef-service.jpg"
       />
       <div className="px-4 md:px-0">
         <PopularMenu />
